@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/waocuda.dir/waocuda_generated_waocuda.cu.o CMakeFiles/waocuda.dir/waocuda_intermediate_link.o  -o waocuda /usr/local/cuda/lib64/libcudart_static.a -lpthread -ldl /usr/lib/x86_64-linux-gnu/librt.so 
