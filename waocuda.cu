@@ -97,7 +97,8 @@ __global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* 
   float rnd_sel;
   joints jointval;
   joints Leader_pos;
-  float tmpscore,a,a2;
+  float tmpscore;
+  float a,a2,A,C,b,l,p;
   bool chkl1,chkl2,chkl3,chkl4,chkl5,chkl6,chku1,chku2,chku3,chku4,chku5,chku6,chmin;
   int* tmppnt;
   
@@ -145,8 +146,15 @@ __global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* 
       *bestjoint=jointval;
     }
 
-    a=2-cyc*((2)/n_cycles);
-    a2=-1+cyc*((-1)/n_cycles);
+    a  =  2-cyc*((2) /n_cycles);
+    a2 = -1+cyc*((-1)/n_cycles);
+    
+    A=2*a*curand_uniform(&state)-a;
+    C=2*curand_uniform(&state);
+  
+    b=1;
+    l=(a2-1)*curand_uniform(&state)+1;
+    p = curand_uniform(&state);
     
 
   }
