@@ -60,39 +60,39 @@ CMAKE_SOURCE_DIR = /home/kolmogorov/cuda-workspace/WoaCuda
 CMAKE_BINARY_DIR = /home/kolmogorov/cuda-workspace/WoaCuda/build
 
 #=============================================================================
-# Target rules for target CMakeFiles/waocuda.dir
+# Target rules for target CMakeFiles/woacuda.dir
 
 # All Build rule for target.
-CMakeFiles/waocuda.dir/all:
-	$(MAKE) -f CMakeFiles/waocuda.dir/build.make CMakeFiles/waocuda.dir/depend
-	$(MAKE) -f CMakeFiles/waocuda.dir/build.make CMakeFiles/waocuda.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/kolmogorov/cuda-workspace/WoaCuda/build/CMakeFiles --progress-num=1,2,3 "Built target waocuda"
-.PHONY : CMakeFiles/waocuda.dir/all
+CMakeFiles/woacuda.dir/all:
+	$(MAKE) -f CMakeFiles/woacuda.dir/build.make CMakeFiles/woacuda.dir/depend
+	$(MAKE) -f CMakeFiles/woacuda.dir/build.make CMakeFiles/woacuda.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/kolmogorov/cuda-workspace/WoaCuda/build/CMakeFiles --progress-num=1,2,3 "Built target woacuda"
+.PHONY : CMakeFiles/woacuda.dir/all
 
 # Include target in all.
-all: CMakeFiles/waocuda.dir/all
+all: CMakeFiles/woacuda.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/waocuda.dir/rule: cmake_check_build_system
+CMakeFiles/woacuda.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kolmogorov/cuda-workspace/WoaCuda/build/CMakeFiles 3
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/waocuda.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/woacuda.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kolmogorov/cuda-workspace/WoaCuda/build/CMakeFiles 0
-.PHONY : CMakeFiles/waocuda.dir/rule
+.PHONY : CMakeFiles/woacuda.dir/rule
 
 # Convenience name for target.
-waocuda: CMakeFiles/waocuda.dir/rule
+woacuda: CMakeFiles/woacuda.dir/rule
 
-.PHONY : waocuda
-
-# clean rule for target.
-CMakeFiles/waocuda.dir/clean:
-	$(MAKE) -f CMakeFiles/waocuda.dir/build.make CMakeFiles/waocuda.dir/clean
-.PHONY : CMakeFiles/waocuda.dir/clean
+.PHONY : woacuda
 
 # clean rule for target.
-clean: CMakeFiles/waocuda.dir/clean
+CMakeFiles/woacuda.dir/clean:
+	$(MAKE) -f CMakeFiles/woacuda.dir/build.make CMakeFiles/woacuda.dir/clean
+.PHONY : CMakeFiles/woacuda.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/woacuda.dir/clean
 
 .PHONY : clean
 

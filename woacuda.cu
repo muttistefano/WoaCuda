@@ -82,7 +82,7 @@ __device__ void fobj(joints currpos,float* tmpscore)
   *tmpscore=sqrt(currpos.jointsval[0]*currpos.jointsval[0]+currpos.jointsval[1]*currpos.jointsval[1]+currpos.jointsval[2]*currpos.jointsval[2]+currpos.jointsval[3]*currpos.jointsval[3]+currpos.jointsval[4]*currpos.jointsval[4]+currpos.jointsval[5]*currpos.jointsval[5]);
 }
 
-__global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* bestjoint)
+__global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* bestjoint,float factor)//estrai best ogni ciclo in host
 {
   joints Leader_pos;
   float tmpscore;
@@ -147,7 +147,7 @@ __global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* 
     {
       if(curand_uniform(&state)<0.5)
       {
-        if(fabsf(A)>=1)
+        if(fabsf(A)>=factor)
         {
           X_rand = jointshar[static_cast<int>(floor((blockDim.x)*curand_uniform(&state)))].jointsval[j]; //blockDim.y e z??
           D_X_rand=abs(C*X_rand-jointshar[threadIdx.x].jointsval[j]);
@@ -171,13 +171,13 @@ __global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* 
 ///////////CLASS
 
 
-class WaoCuda
+class WoaCuda
 {
   int n_whales;
   int n_cycles;
   int n_joints;
   float factor;
-  float *hostBestscore  = static_cast<float *>(malloc(sizeof(float)));
+  
   float *deviceBestscore;
   
   joints *hostjointbest = static_cast<joints*>(malloc(sizeof(joints)));
@@ -189,12 +189,15 @@ class WaoCuda
   
   public:
 
-    WaoCuda(int nwhales,int ncyc,boundaries limits);
+    float *hostBestscore  = static_cast<float *>(malloc(sizeof(float)));
+    
+    WoaCuda(int nwhales,int ncyc,boundaries limits,float factor);
     void RunCycle();
+    void Copytohost();
 };
 
 ///////////CLASS METHODS
-WaoCuda::WaoCuda(int nwhales,int ncyc,boundaries limits)
+WoaCuda::WoaCuda(int nwhales,int ncyc,boundaries limits,float factor)
 {
   n_whales=nwhales;
   n_cycles=ncyc;
@@ -209,21 +212,27 @@ WaoCuda::WaoCuda(int nwhales,int ncyc,boundaries limits)
   cudaMalloc(static_cast<joints**>(&devicejointbest),sizeof(joints));
   memset(hostjointbest,0,sizeof(joints));
   cudaMemcpy(devicejointbest,hostjointbest,sizeof(joints),cudaMemcpyHostToDevice);
-//   cudaMemcpy(hostArray,deviceArray,bytes,cudaMemcpyDeviceToHost);
   
   printf("whale number: %lu \n",n_whales);
   printf("cycles      : %lu \n",n_cycles);
   printf("shared bytes: %lu \n",shrbytes);
 }
 
-void WaoCuda::RunCycle() //launch cuda kernel 
+void WoaCuda::RunCycle() //launch cuda kernel 
 {
-  WaoCycle<<<1,n_whales,shrbytes>>>(jointlimits,n_cycles,deviceBestscore,devicejointbest);//<<<blocks,thread>>>
+  WaoCycle<<<1,n_whales,shrbytes>>>(jointlimits,n_cycles,deviceBestscore,devicejointbest,factor);//<<<blocks,thread>>>
   if (cudaSuccess != cudaDeviceSynchronize()) {
     printf("ERROR in WaoCycle\n");
     exit(-2);
   }
 }
+
+void WoaCuda::Copytohost()
+{
+  cudaMemcpy(hostBestscore,deviceBestscore,sizeof(float),cudaMemcpyDeviceToHost);
+  cudaMemcpy(hostjointbest,devicejointbest,sizeof(joints),cudaMemcpyDeviceToHost);
+}
+
 
 ///////////MAIN
 
@@ -242,10 +251,14 @@ int main(int argc, char *argv[]){
   limit.joint6b[0]=-360;
   limit.joint6b[1]= 360;
   
-  int ncyc=atof(argv[1]);
+  int whl=atof(argv[1]);
+  int ncyc=atof(argv[2]);
+  int fact=1;
   
-  WaoCuda testwao(10,ncyc,limit);//nwhales,cycles,limits,joints
-  testwao.RunCycle();
+  WoaCuda testwao(whl,ncyc,limit,fact);//nwhales,cycles,limits,joints
+  testwao.RunCycle(); 
+  testwao.Copytohost();
+   printf("best: %f\n\n",*(testwao.hostBestscore));
   return 0;
 }
 

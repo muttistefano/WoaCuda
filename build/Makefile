@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/kolmogorov/cuda-workspace/WoaCuda/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named waocuda
+# Target rules for targets named woacuda
 
 # Build rule for target.
-waocuda: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 waocuda
-.PHONY : waocuda
+woacuda: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 woacuda
+.PHONY : woacuda
 
 # fast build rule for target.
-waocuda/fast:
-	$(MAKE) -f CMakeFiles/waocuda.dir/build.make CMakeFiles/waocuda.dir/build
-.PHONY : waocuda/fast
+woacuda/fast:
+	$(MAKE) -f CMakeFiles/woacuda.dir/build.make CMakeFiles/woacuda.dir/build
+.PHONY : woacuda/fast
 
 # Help Target
 help:
@@ -129,9 +129,9 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... waocuda"
+	@echo "... edit_cache"
+	@echo "... woacuda"
 .PHONY : help
 
 
