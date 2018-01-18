@@ -289,6 +289,9 @@ waocuda_SOURCE_DIR:STATIC=/home/kolmogorov/cuda-workspace/WoaCuda
 //Value Computed by CMake
 woacuda_BINARY_DIR:STATIC=/home/kolmogorov/cuda-workspace/WoaCuda/build
 
+//Dependencies for target
+woacuda_LIB_DEPENDS:STATIC=
+
 //Value Computed by CMake
 woacuda_SOURCE_DIR:STATIC=/home/kolmogorov/cuda-workspace/WoaCuda
 

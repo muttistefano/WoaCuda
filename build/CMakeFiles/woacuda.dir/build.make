@@ -59,6 +59,7 @@ include CMakeFiles/woacuda.dir/flags.make
 
 CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: ../woacuda.cu
 CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: ../woacuda.cu
+CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: ../woacuda.h
 CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: /usr/include/_G_config.h
 CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: /usr/include/alloca.h
 CMakeFiles/woacuda.dir/woacuda_generated_woacuda.cu.o: /usr/include/asm-generic/errno-base.h
