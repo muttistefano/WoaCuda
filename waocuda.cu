@@ -54,17 +54,6 @@ __device__ __forceinline__ float atomicMul(float* address, float val)
   return __int_as_float(old);
 }
 
-// __device__ static float fatomicMin(float* address, float val)
-// {
-//   float old = *addr, assumed;
-//   if(old <= value) return false;
-//   do
-//   {
-//     assumed = old;
-//     old = atomicCAS((unsigned int*)addr, __float_as_int(assumed), __float_as_int(fminf(value, assumed)));
-//   }while(old!=assumed);
-//   return true;
-// }
 __device__ static float fatomicMin(float* address, float val)
 {
     int* address_as_i = (int*) address;
@@ -92,18 +81,21 @@ __device__ void fobj(joints currpos,float* tmpscore)
   *tmpscore=sqrt(currpos.jointsval[0]*currpos.jointsval[0]+currpos.jointsval[1]*currpos.jointsval[1]+currpos.jointsval[2]*currpos.jointsval[2]+currpos.jointsval[3]*currpos.jointsval[3]+currpos.jointsval[4]*currpos.jointsval[4]+currpos.jointsval[5]*currpos.jointsval[5]);
 }
 
-__global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* bestjoint)
+__global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* bestjoint,int n_joints)//rifare in funz of n_joints
 {
   float rnd_sel;
   joints jointval;
   joints Leader_pos;
   float tmpscore;
-  float a,a2,A,C,b,l,p;
+  float a,a2,A,C,b,l,p,D_X_rand,X_rand;
   bool chkl1,chkl2,chkl3,chkl4,chkl5,chkl6,chku1,chku2,chku3,chku4,chku5,chku6,chmin;
   int* tmppnt;
+  int rand_leader_index[n_joints];
+  
+  extern __shared__ joints shmem[];
+  joints * jointshar  = (joints *)&shmem;
   
   curandState_t state;
-  extern __shared__ int shmem[];
   curand_init(clock64() ,threadIdx.x, 0, &state);
   
   jointval.jointsval[0]=curand_uniform(&state)*(limit.joint1b[1]-limit.joint1b[0])+limit.joint1b[0];
@@ -156,7 +148,26 @@ __global__ void WaoCycle(boundaries limit,int n_cycles,float* bestscore,joints* 
     l=(a2-1)*curand_uniform(&state)+1;
     p = curand_uniform(&state);
     
-
+    #pragma unroll
+    for(int j=0;j<n_joints;j++){
+      if(curand_uniform(&state)<0.5)
+      {
+        if fabsf(A)>=1{
+          X_rand = jointshar[floor(n_whales*curand_uniform(&state)+1)].jointsval[j];
+          D_X_rand=abs(C*X_rand-jointshar[threadIdx.x].jointsval[j]);
+          jointshar[threadIdx.x].jointsval[j]=X_rand-A*D_X_rand;
+        }
+        else
+        {
+          jointshar[threadIdx.x].jointsval[j]=Leader_pos-A*abs(C*Leader_pos-jointshar[threadIdx.x].jointsval[j]);
+        }
+      }
+      else
+      {  
+        distance2Leader=abs(Leader_pos(j)-Positions(i,j));
+        Positions(i,j)=distance2Leader*exp(b.*l).*cos(l.*2*pi)+Leader_pos(j);  
+      }
+    }
   }
 }
 
@@ -168,6 +179,7 @@ class WaoCuda
 {
   int n_whales;
   int n_cycles;
+  int n_joints;
   float factor;
   float *hostBestscore  = static_cast<float *>(malloc(sizeof(float)));
   float *deviceBestscore;
@@ -177,16 +189,17 @@ class WaoCuda
   boundaries jointlimits;
   public:
 
-    WaoCuda(int nwhales,int ncyc,boundaries limits);
+    WaoCuda(int nwhales,int ncyc,boundaries limits,int njnts);
     void RunCycle();
 };
 
 ///////////CLASS METHODS
-WaoCuda::WaoCuda(int nwhales,int ncyc,boundaries limits)
+WaoCuda::WaoCuda(int nwhales,int ncyc,boundaries limits,int njnts)
 {
   n_whales=nwhales;
   n_cycles=ncyc;
   jointlimits=limits;
+  n_joints=njnts;
   
   cudaMalloc(static_cast<float**>(&deviceBestscore),sizeof(float));
   memset(hostBestscore,0,sizeof(float));
@@ -202,7 +215,7 @@ WaoCuda::WaoCuda(int nwhales,int ncyc,boundaries limits)
 
 void WaoCuda::RunCycle() //launch cuda kernel 
 {
-  WaoCycle<<<1,10>>>(jointlimits,n_cycles,deviceBestscore,devicejointbest);//<<<blocks,thread>>>
+  WaoCycle<<<1,10>>>(jointlimits,n_cycles,deviceBestscore,devicejointbest,n_joints);//<<<blocks,thread>>>
   if (cudaSuccess != cudaDeviceSynchronize()) {
     printf("ERROR in WaoCycle\n");
     exit(-2);
